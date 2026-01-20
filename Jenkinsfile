@@ -19,7 +19,7 @@ pipeline {
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/YOUR_USERNAME/RamatGan.git',
+                        url: 'https://github.com/Aik89/RamatGan.git',
                         credentialsId: 'YOUR_CREDENTIAL_ID'
                     ]],
                     extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'RamatGan']]

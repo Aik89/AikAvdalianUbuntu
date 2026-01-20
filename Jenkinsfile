@@ -2,29 +2,41 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Checkout main repo') {
             steps {
-                checkout scm
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Aik89/AikAvdalianUbuntu.git',
+                        credentialsId: 'YOUR_CREDENTIAL_ID'
+                    ]]
+                ])
+            }
+        }
+
+        stage('Checkout RamatGan repo') {
+            steps {
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/YOUR_USERNAME/RamatGan.git',
+                        credentialsId: 'YOUR_CREDENTIAL_ID'
+                    ]],
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'RamatGan']]
+                ])
             }
         }
 
         stage('Setup Python') {
             steps {
-                sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-                '''
+                sh 'python3 -m venv venv'
+                sh 'source venv/bin/activate && pip install -r requirements.txt || true'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Daily Tests') {
             steps {
-                sh '''
-                . venv/bin/activate
-                pytest -v || true
-                '''
+                sh 'source venv/bin/activate && pytest RamatGan/tests/daily_check/test_daily.py'
             }
         }
     }
